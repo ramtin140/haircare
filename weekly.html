@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>برنامه هفتگی - مراقبت از موها</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-green: #1B4332;
+            --warm-cream: #F8F5F0;
+            --soft-gold: #D4AF37;
+            --charcoal: #2D3748;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #F8F5F0 0%, #E8E2D5 100%);
+            min-height: 100vh;
+        }
+        
+        .persian-text {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .calendar-day {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .calendar-day:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
+            border-color: var(--soft-gold);
+        }
+        
+        .calendar-day.minoxidil {
+            border-color: #3B82F6;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(255, 255, 255, 0.95));
+        }
+        
+        .calendar-day.tonic {
+            border-color: #10B981;
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(255, 255, 255, 0.95));
+        }
+        
+        .calendar-day.dermaroller {
+            border-color: var(--soft-gold);
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(255, 255, 255, 0.95));
+        }
+        
+        .calendar-day.today {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 20px rgba(27, 67, 50, 0.3);
+        }
+        
+        .treatment-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-green), var(--soft-gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--soft-gold);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .treatment-detail {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(27, 67, 50, 0.1);
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .treatment-detail.active {
+            transform: scale(1);
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .instruction-step {
+            background: rgba(27, 67, 50, 0.05);
+            border-right: 4px solid var(--primary-green);
+            padding: 12px 16px;
+            margin: 8px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(27, 67, 50, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="treatment-icon w-10 h-10 text-lg">
+                        💆‍♂️
+                    </div>
+                    <h1 class="text-2xl font-bold persian-text" style="color: var(--primary-green);">
+                        مراقبت از موها
+                    </h1>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="nav-link persian-text font-medium text-gray-700 hover:text-green-800">
+                        روال روزانه
+                    </a>
+                    <a href="weekly.html" class="nav-link persian-text font-medium text-green-800 border-b-2 border-yellow-500">
+                        برنامه هفتگی
+                    </a>
+                    <a href="progress.html" class="nav-link persian-text font-medium text-gray-700 hover:text-green-800">
+                        پیشرفت
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="py-16 relative">
+        <div class="floating-particles" id="particles"></div>
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold persian-text mb-4" style="color: var(--primary-green);">
+                برنامه درمانی هفتگی
+            </h2>
+            <p class="text-xl text-gray-600 persian-text max-w-2xl mx-auto">
+                هر روز هفته برنامه خاص خود را دارد. روی هر روز کلیک کنید تا جزئیات درمان را مشاهده کنید.
+            </p>
+        </div>
+    </section>
+
+    <!-- Weekly Calendar -->
+    <section class="py-12">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-7 gap-6 max-w-7xl mx-auto">
+                <!-- Saturday - شنبه -->
+                <div class="calendar-day minoxidil rounded-2xl p-6 shadow-lg text-center" data-day="0">
+                    <div class="text-2xl font-bold persian-text mb-4" style="color: #3B82F6;">
+                        شنبه
+                    </div>
+                    <div class="text-4xl mb-4">🫧</div>
+                    <h3 class="font-semibold persian-text mb-2">فوم ماینوکسیدیل</h3>
+                    <p class="text-sm text-gray-600 persian-text">۵٪ concentration</p>
+                    <div class="mt-4 text-xs text-blue-600 persian-text">
+                        ⛔ تونیک نزن
+                    </div>
+                </div>
+
+                <!-- Sunday - یکشنبه -->
+                <div class="calendar-day tonic rounded-2xl p-6 shadow-lg text-center" data-day="1">
+                    <div class="text-2xl font-bold persian-text mb-4" style="color: #10B981;">
+                        یکشنبه
+                    </div>
+                    <div class="text-4xl mb-4">🧴</div>
+                    <h3 class="font-semibold persian-text mb-2">تونیک سریتا T2</h3>
+                    <p class="text-sm text-gray-600 persian-text">روی ناحیه کم‌پشت</p>
+                    <div class="mt-4 text-xs text-green-600 persian-text">
+                        ⛔ بدون ماینوکسیدیل
+                    </div>
+                </div>
+
+                <!-- Monday - دوشنبه -->
+                <div class="calendar-day minoxidil rounded-2xl p-6 shadow-lg text-center" data-day="2">
+                    <div class="text-2xl font-bold persian-text mb-4" style="color: #3B82F6;">
+                        دوشنبه
+                    </div>
+                    <div class="text-4xl mb-4">🫧</div>
+                    <h3 class="font-semibold persian-text mb-2">فوم ماینوکسیدیل</h3>
+                    <p class="text-sm text-gray-600 persian-text">۵٪ concentration</p>
+                    <div class="mt-4 text-xs text-blue-600 persian-text">
+                        ⛔ تونیک نزن
+                    </div>
+                </div>
+
+                <!-- Tuesday - سه‌شنبه -->
+                <div class="calendar-day dermaroller rounded-2xl p-6 shadow-lg text-center" data-day="3">
+                    <div class="text-2xl font-bold persian-text mb-4" style="color: var(--soft-gold);">
+                        سه‌شنبه
+                    </div>
+                    <div class="text-4xl mb-4">📍</div>
+                    <h3 class="font-semibold persian-text mb-2">درمارولر ۰٫۵mm</h3>
+                    <p class="text-sm text-gray-600 persian-text">۳–۵ دقیقه</p>
+                    <div class="mt-4 text-xs text-yellow-600 persian-text">
+                        ✨ بعد از ۳۰ دقیقه: تونیک سریتا
+                    </div>
+                </div>
+
+                <!-- Wednesday - چهارشنبه -->
+                <div class="calendar-day minoxidil rounded-2xl p-6 shadow-lg text-center" data-day="4">
+                    <div class="text-2xl font-bold persian-text mb-4" style="color: #3B82F6;">
+                        چهارشنبه
+                    </div>
+                    <div class="text-4xl mb-4">🫧</div>
+                    <h3 class="font-semibold persian-text mb-2">فوم ماینوکسیدیل</h3>
+                    <p class="text-sm text-gray-600 persian-text">۵٪ concentration</p>
+                    <div class="mt-4 text-xs text-blue-600 persian-text">
+                        ⛔ تونیک نزن
+                    </div>
+                </div>
+
+                <!-- Thursday - پنجشنبه -->
+                <div class="calendar-day tonic rounded-2xl p-6 shadow-lg text-center" data-day="5">
+                    <div class="text-2xl font-bold persian-text mb-4" style="color: #10B981;">
+                        پنجشنبه
+                    </div>
+                    <div class="text-4xl mb-4">🧴</div>
+                    <h3 class="font-semibold persian-text mb-2">تونیک سریتا T2</h3>
+                    <p class="text-sm text-gray-600 persian-text">روی ناحیه کم‌پشت</p>
+                    <div class="mt-4 text-xs text-green-600 persian-text">
+                        ⛔ بدون ماینوکسیدیل
+                    </div>
+                </div>
+
+                <!-- Friday - جمعه -->
+                <div class="calendar-day dermaroller rounded-2xl p-6 shadow-lg text-center" data-day="6">
+                    <div class="text-2xl font-bold persian-text mb-4" style="color: var(--soft-gold);">
+                        جمعه
+                    </div>
+                    <div class="text-4xl mb-4">📍</div>
+                    <h3 class="font-semibold persian-text mb-2">درمارولر ۰٫۵mm</h3>
+                    <p class="text-sm text-gray-600 persian-text">۳–۵ دقیقه</p>
+                    <div class="mt-4 text-xs text-yellow-600 persian-text">
+                        ✨ بعد از ۳۰ دقیقه: تونیک سریتا
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Treatment Details -->
+    <section class="py-16">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <div id="treatment-detail" class="treatment-detail rounded-2xl p-8 shadow-lg">
+                    <div class="text-center mb-8">
+                        <div class="treatment-icon">
+                            🫧
+                        </div>
+                        <h3 id="detail-title" class="text-3xl font-bold persian-text" style="color: var(--primary-green);">
+                            انتخاب روز هفته
+                        </h3>
+                        <p id="detail-subtitle" class="text-xl text-gray-600 persian-text mt-2">
+                            برای مشاهده جزئیات درمان، روی یکی از روزهای بالا کلیک کنید
+                        </p>
+                    </div>
+                    
+                    <div id="detail-content" class="space-y-6">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Treatment Instructions -->
+    <section class="py-16 bg-white/50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-6xl mx-auto">
+                <h3 class="text-3xl font-bold persian-text text-center mb-12" style="color: var(--primary-green);">
+                    راهنمای درمان‌ها
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <!-- Minoxidil Instructions -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-4">🫧</div>
+                            <h4 class="text-xl font-bold persian-text" style="color: #3B82F6;">
+                                فوم ماینوکسیدیل
+                            </h4>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۱. پاک‌سازی</div>
+                                <div class="text-xs text-gray-600 persian-text">سر را کاملاً خشک کنید</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۲. مقدار مصرف</div>
+                                <div class="text-xs text-gray-600 persian-text">مقدار کف به اندازه نیم کف دست</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۳. کاربرد</div>
+                                <div class="text-xs text-gray-600 persian-text">روی ناحیه کم‌پشت بمالید</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۴. جذب</div>
+                                <div class="text-xs text-gray-600 persian-text">اجازه دهید کاملاً جذب شود</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tonic Instructions -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-4">🧴</div>
+                            <h4 class="text-xl font-bold persian-text" style="color: #10B981;">
+                                تونیک سریتا T2
+                            </h4>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۱. آماده‌سازی</div>
+                                <div class="text-xs text-gray-600 persian-text">سر را تمیز و خشک کنید</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۲. اسپری</div>
+                                <div class="text-xs text-gray-600 persian-text">روی ناحیه کم‌پشت اسپری کنید</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۳. ماساژ</div>
+                                <div class="text-xs text-gray-600 persian-text">با نوک انگشت ماساژ دهید</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۴. زمان</div>
+                                <div class="text-xs text-gray-600 persian-text">قبل از خواب استفاده شود</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Dermaroller Instructions -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-4">📍</div>
+                            <h4 class="text-xl font-bold persian-text" style="color: var(--soft-gold);">
+                                درمارولر ۰٫۵mm
+                            </h4>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۱. ضدعفونی</div>
+                                <div class="text-xs text-gray-600 persian-text">درمارولر را ضدعفونی کنید</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۲. تکنیک</div>
+                                <div class="text-xs text-gray-600 persian-text">به آرامی روی پوست بکشید</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۳. مدت زمان</div>
+                                <div class="text-xs text-gray-600 persian-text">۳ تا ۵ دقیقه کافی است</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۴. بعد از درمان</div>
+                                <div class="text-xs text-gray-600 persian-text">بعد از ۳۰ دقیقه تونیک بزنید</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Finasteride Instructions -->
+                    <div class="bg-white rounded-2xl p-6 shadow-lg">
+                        <div class="text-center mb-4">
+                            <div class="text-4xl mb-4">💊</div>
+                            <h4 class="text-xl font-bold persian-text" style="color: var(--charcoal);">
+                                فیناستراید 1mg
+                            </h4>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۱. زمان مصرف</div>
+                                <div class="text-xs text-gray-600 persian-text">هر روز صبح بعد از غذا</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۲. مقدار</div>
+                                <div class="text-xs text-gray-600 persian-text">یک عدد قرص 1mg</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۳. نحوه مصرف</div>
+                                <div class="text-xs text-gray-600 persian-text">با آب فراوان میل شود</div>
+                            </div>
+                            <div class="instruction-step">
+                                <div class="font-semibold persian-text text-sm">۴. تداوم</div>
+                                <div class="text-xs text-gray-600 persian-text">مصرف منظم مهم است</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white/90 backdrop-blur-md py-8">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-600 persian-text">
+                © 2024 برنامه مراقبت از موها - طراحی شده برای سلامتی و زیبایی موهای شما
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+    <script>
+        // Treatment details data
+        const treatmentDetails = {
+            0: {
+                title: "فوم ماینوکسیدیل ۵٪ - شنبه",
+                subtitle: "درمان با ماینوکسیدیل برای رشد مو",
+                icon: "🫧",
+                color: "#3B82F6",
+                instructions: [
+                    "سر را کاملاً خشک کنید قبل از استفاده",
+                    "مقدار کف به اندازه نصف کف دست را بردارید",
+                    "به آرامی روی ناحیه کم‌پشت سر ماساژ دهید",
+                    "اجازه دهید کاملاً جذب شود قبل خواب",
+                    "از شستن سر تا ۴ ساعت خودداری کنید"
+                ],
+                warnings: ["⛔ امروز از تونیک سریتا استفاده نکنید"],
+                time: "بهترین زمان: شب قبل از خواب"
+            },
+            1: {
+                title: "تونیک سریتا T2 - یکشنبه",
+                subtitle: "تونیک گیاهی برای تقویت مو",
+                icon: "🧴",
+                color: "#10B981",
+                instructions: [
+                    "سر را تمیز و کاملاً خشک کنید",
+                    "تونیک را روی ناحیه کم‌پشت اسپری کنید",
+                    "با نوک انگشتان به آرامی ماساژ دهید",
+                    "اجازه دهید جذب شود، نیاز به شستشو نیست",
+                    "برای بهترین نتیجه، قبل از خواب استفاده شود"
+                ],
+                warnings: ["⛔ امروز از ماینوکسیدیل استفاده نکنید"],
+                time: "بهترین زمان: قبل از خواب"
+            },
+            2: {
+                title: "فوم ماینوکسیدیل ۵٪ - دوشنبه",
+                subtitle: "درمان با ماینوکسیدیل برای رشد مو",
+                icon: "🫧",
+                color: "#3B82F6",
+                instructions: [
+                    "سر را کاملاً خشک کنید قبل از استفاده",
+                    "مقدار کف به اندازه نصف کف دست را بردارید",
+                    "به آرامی روی ناحیه کم‌پشت سر ماساژ دهید",
+                    "اجازه دهید کاملاً جذب شود قبل خواب",
+                    "از شستن سر تا ۴ ساعت خودداری کنید"
+                ],
+                warnings: ["⛔ امروز از تونیک سریتا استفاده نکنید"],
+                time: "بهترین زمان: شب قبل از خواب"
+            },
+            3: {
+                title: "درمارولر ۰٫۵mm - سه‌شنبه",
+                subtitle: "روز درمارولر برای تحریک فولیکول‌ها",
+                icon: "📍",
+                color: "#D4AF37",
+                instructions: [
+                    "درمارولر را با الکل ضدعفونی کنید",
+                    "سر را تمیز و خشک کنید",
+                    "به آرامی درمارولر را روی پوست سر بکشید",
+                    "۳ تا ۵ دقیقه در نواحی مختلف سر",
+                    "بعد از ۳۰ دقیقه تونیک سریتا بزنید"
+                ],
+                warnings: ["✨ بعد از ۳۰ دقیقه: تونیک سریتا", "⛔ بدون ماینوکسیدیل"],
+                time: "بهترین زمان: عصر یا شب"
+            },
+            4: {
+                title: "فوم ماینوکسیدیل ۵٪ - چهارشنبه",
+                subtitle: "درمان با ماینوکسیدیل برای رشد مو",
+                icon: "🫧",
+                color: "#3B82F6",
+                instructions: [
+                    "سر را کاملاً خشک کنید قبل از استفاده",
+                    "مقدار کف به اندازه نصف کف دست را بردارید",
+                    "به آرامی روی ناحیه کم‌پشت سر ماساژ دهید",
+                    "اجازه دهید کاملاً جذب شود قبل خواب",
+                    "از شستن سر تا ۴ ساعت خودداری کنید"
+                ],
+                warnings: ["⛔ امروز از تونیک سریتا استفاده نکنید"],
+                time: "بهترین زمان: شب قبل از خواب"
+            },
+            5: {
+                title: "تونیک سریتا T2 - پنجشنبه",
+                subtitle: "تونیک گیاهی برای تقویت مو",
+                icon: "🧴",
+                color: "#10B981",
+                instructions: [
+                    "سر را تمیز و کاملاً خشک کنید",
+                    "تونیک را روی ناحیه کم‌پشت اسپری کنید",
+                    "با نوک انگشتان به آرامی ماساژ دهید",
+                    "اجازه دهید جذب شود، نیاز به شستشو نیست",
+                    "برای بهترین نتیجه، قبل از خواب استفاده شود"
+                ],
+                warnings: ["⛔ امروز از ماینوکسیدیل استفاده نکنید"],
+                time: "بهترین زمان: قبل از خواب"
+            },
+            6: {
+                title: "درمارولر ۰٫۵mm - جمعه",
+                subtitle: "روز دوم درمارولر برای تحریک فولیکول‌ها",
+                icon: "📍",
+                color: "#D4AF37",
+                instructions: [
+                    "درمارولر را با الکل ضدعفونی کنید",
+                    "سر را تمیز و خشک کنید",
+                    "به آرامی درمارولر را روی پوست سر بکشید",
+                    "۳ تا ۵ دقیقه در نواحی مختلف سر",
+                    "بعد از ۳۰ دقیقه تونیک سریتا بزنید"
+                ],
+                warnings: ["✨ بعد از ۳۰ دقیقه: تونیک سریتا", "⛔ بدون ماینوکسیدیل"],
+                time: "بهترین زمان: عصر یا شب"
+            }
+        };
+
+        // Calendar day click handler
+        document.querySelectorAll('.calendar-day').forEach(day => {
+            day.addEventListener('click', function() {
+                const dayIndex = parseInt(this.dataset.day);
+                showTreatmentDetail(dayIndex);
+                
+                // Remove today class from all days
+                document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('today'));
+                // Add today class to clicked day
+                this.classList.add('today');
+            });
+        });
+
+        function showTreatmentDetail(dayIndex) {
+            const detail = treatmentDetails[dayIndex];
+            const detailElement = document.getElementById('treatment-detail');
+            const titleElement = document.getElementById('detail-title');
+            const subtitleElement = document.getElementById('detail-subtitle');
+            const contentElement = document.getElementById('detail-content');
+
+            // Update title and subtitle
+            titleElement.textContent = detail.title;
+            titleElement.style.color = detail.color;
+            subtitleElement.textContent = detail.subtitle;
+
+            // Create content
+            let contentHTML = `
+                <div class="text-center mb-6">
+                    <div class="text-6xl mb-4">${detail.icon}</div>
+                    <div class="text-sm text-gray-500 persian-text">${detail.time}</div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-xl font-bold persian-text mb-4" style="color: var(--primary-green);">
+                            دستورالعمل‌ها
+                        </h4>
+                        <div class="space-y-3">
+            `;
+
+            detail.instructions.forEach((instruction, index) => {
+                contentHTML += `
+                    <div class="instruction-step">
+                        <div class="font-semibold persian-text text-sm">${index + 1}. مرحله ${index + 1}</div>
+                        <div class="text-xs text-gray-600 persian-text">${instruction}</div>
+                    </div>
+                `;
+            });
+
+            contentHTML += `
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-xl font-bold persian-text mb-4" style="color: var(--primary-green);">
+                            نکات مهم
+                        </h4>
+                        <div class="space-y-3">
+            `;
+
+            detail.warnings.forEach(warning => {
+                const isImportant = warning.includes('✨');
+                const bgColor = isImportant ? 'bg-yellow-50 border-yellow-400' : 'bg-red-50 border-red-400';
+                const textColor = isImportant ? 'text-yellow-800' : 'text-red-800';
+                
+                contentHTML += `
+                    <div class="p-3 ${bgColor} border-r-4 ${isImportant ? 'border-yellow-400' : 'border-red-400'} rounded-lg">
+                        <div class="text-sm ${textColor} persian-text font-medium">${warning}</div>
+                    </div>
+                `;
+            });
+
+            contentHTML += `
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-green-50 border-r-4 border-green-400 rounded-lg">
+                            <div class="text-sm text-green-800 persian-text font-medium">
+                                💡 نکته: تداوم در درمان کلید موفقیت است. به برنامه منظم پایبند باشید.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            contentElement.innerHTML = contentHTML;
+            detailElement.classList.add('active');
+
+            // Animate the detail panel
+            anime({
+                targets: detailElement,
+                scale: [0.95, 1],
+                opacity: [0, 1],
+                duration: 500,
+                easing: 'easeOutQuart'
+            });
+        }
+
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            
+            for (let i = 0; i < 15; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+
+        // Initialize particles on load
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            
+            // Mark today
+            const today = new Date().getDay();
+            const todayElement = document.querySelector(`[data-day="${today}"]`);
+            if (todayElement) {
+                todayElement.classList.add('today');
+                showTreatmentDetail(today);
+            }
+        });
+    </script>
+</body>
+</html>

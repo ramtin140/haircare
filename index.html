@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مراقبت از موها - روال روزانه</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    
+    <style>
+        :root {
+            --primary-green: #1B4332;
+            --warm-cream: #F8F5F0;
+            --soft-gold: #D4AF37;
+            --charcoal: #2D3748;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #F8F5F0 0%, #E8E2D5 100%);
+            min-height: 100vh;
+        }
+        
+        .persian-text {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(27, 67, 50, 0.1) 0%, rgba(212, 175, 55, 0.1) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-image {
+            background-image: url('resources/hero-hair-care.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .routine-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(27, 67, 50, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .routine-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(27, 67, 50, 0.15);
+        }
+        
+        .routine-checkbox {
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--primary-green);
+            border-radius: 6px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .routine-checkbox:checked {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+        
+        .routine-checkbox:checked::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .timer-btn {
+            background: linear-gradient(135deg, var(--primary-green), #2D5A3D);
+            transition: all 0.3s ease;
+        }
+        
+        .timer-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(27, 67, 50, 0.3);
+        }
+        
+        .timer-active {
+            background: linear-gradient(135deg, var(--soft-gold), #E6C547);
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .progress-bar {
+            background: rgba(27, 67, 50, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--primary-green), var(--soft-gold));
+            height: 100%;
+            width: 0%;
+            transition: width 0.8s ease;
+        }
+        
+        .celebration-particle {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: var(--soft-gold);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--primary-green);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(27, 67, 50, 0.3);
+            z-index: 1000;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        
+        .floating-particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(27, 67, 50, 0.1);
+            border-radius: 50%;
+            animation: float 6s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--soft-gold);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .treatment-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--primary-green), var(--soft-gold));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto 15px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="treatment-icon w-10 h-10 text-lg">
+                        💆‍♂️
+                    </div>
+                    <h1 class="text-2xl font-bold persian-text" style="color: var(--primary-green);">
+                        مراقبت از موها
+                    </h1>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="index.html" class="nav-link persian-text font-medium text-gray-700 hover:text-green-800">
+                        روال روزانه
+                    </a>
+                    <a href="weekly.html" class="nav-link persian-text font-medium text-gray-700 hover:text-green-800">
+                        برنامه هفتگی
+                    </a>
+                    <a href="progress.html" class="nav-link persian-text font-medium text-gray-700 hover:text-green-800">
+                        پیشرفت
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section py-16 relative">
+        <div class="floating-particles" id="particles"></div>
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-right">
+                    <h2 class="text-5xl font-bold persian-text mb-6" style="color: var(--primary-green);">
+                        <span id="typed-text"></span>
+                    </h2>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        برنامه درمانی کامل برای مراقبت از موهای شما با بهترین محصولات و روش‌های تایید شده
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <button onclick="scrollToRoutine()" class="timer-btn text-white px-8 py-4 rounded-full font-medium persian-text">
+                            شروع روال امروز
+                        </button>
+                        <a href="weekly.html" class="bg-white text-gray-700 px-8 py-4 rounded-full font-medium persian-text border-2 border-gray-300 hover:border-green-800 transition-all">
+                            مشاهده برنامه هفتگی
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image h-96 rounded-2xl shadow-2xl"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Daily Progress -->
+    <section class="py-12 bg-white/50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto">
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold persian-text mb-6 text-center" style="color: var(--primary-green);">
+                        پیشرفت امروز
+                    </h3>
+                    <div class="progress-bar h-4 mb-4">
+                        <div class="progress-bar-fill h-full rounded-full"></div>
+                    </div>
+                    <p class="text-center persian-text text-gray-600 progress-text">
+                        0/4 انجام شده
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Daily Routine -->
+    <section id="routine-section" class="py-16">
+        <div class="container mx-auto px-6">
+            <h3 class="text-3xl font-bold persian-text text-center mb-12" style="color: var(--primary-green);">
+                روال روزانه مراقبت از مو
+            </h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                <!-- Morning Routine -->
+                <div class="routine-card rounded-2xl p-8 shadow-lg">
+                    <div class="text-center mb-8">
+                        <div class="treatment-icon">
+                            🌅
+                        </div>
+                        <h4 class="text-2xl font-bold persian-text" style="color: var(--primary-green);">
+                            کارهای صبح
+                        </h4>
+                        <p class="text-gray-600 mt-2 persian-text">روال صبحگاهی برای شروع روز</p>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Finasteride -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="routine-checkbox" data-id="finasteride">
+                                <div>
+                                    <h5 class="font-semibold persian-text text-gray-800">فیناستراید 1mg</h5>
+                                    <p class="text-sm text-gray-600 persian-text">یک عدد قرص Finpecia</p>
+                                </div>
+                            </div>
+                            <div class="text-2xl">💊</div>
+                        </div>
+                        
+                        <!-- Shampoo -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="routine-checkbox" data-id="shampoo">
+                                <div>
+                                    <h5 class="font-semibold persian-text text-gray-800">شامپو Bioxin</h5>
+                                    <p class="text-sm text-gray-600 persian-text">هر روز یا یک‌روز درمیان</p>
+                                </div>
+                            </div>
+                            <button class="timer-btn text-white px-4 py-2 rounded-lg text-sm" data-timer="shampoo">
+                                <span class="timer-display">۵ دقیقه</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Evening Routine -->
+                <div class="routine-card rounded-2xl p-8 shadow-lg">
+                    <div class="text-center mb-8">
+                        <div class="treatment-icon">
+                            🌙
+                        </div>
+                        <h4 class="text-2xl font-bold persian-text" style="color: var(--primary-green);">
+                            کارهای شب
+                        </h4>
+                        <p class="text-gray-600 mt-2 persian-text">روال شبانه برای ترمیم مو</p>
+                    </div>
+                    
+                    <div class="space-y-6">
+                        <!-- Tonic -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="routine-checkbox" data-id="tonic">
+                                <div>
+                                    <h5 class="font-semibold persian-text text-gray-800">تونیک سریتا T2</h5>
+                                    <p class="text-sm text-gray-600 persian-text">روی ناحیه کم‌پشت مو</p>
+                                </div>
+                            </div>
+                            <div class="text-2xl">🧴</div>
+                        </div>
+                        
+                        <!-- Massage -->
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+                            <div class="flex items-center space-x-4">
+                                <input type="checkbox" class="routine-checkbox" data-id="massage">
+                                <div>
+                                    <h5 class="font-semibold persian-text text-gray-800">ماساژ سر</h5>
+                                    <p class="text-sm text-gray-600 persian-text">۵ دقیقه با نوک انگشت</p>
+                                </div>
+                            </div>
+                            <button class="timer-btn text-white px-4 py-2 rounded-lg text-sm" data-timer="massage">
+                                <span class="timer-display">۵ دقیقه</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Weekly Schedule Preview -->
+    <section class="py-16 bg-white/50">
+        <div class="container mx-auto px-6">
+            <div class="max-w-4xl mx-auto text-center">
+                <h3 class="text-3xl font-bold persian-text mb-8" style="color: var(--primary-green);">
+                    برنامه درمانی هفتگی
+                </h3>
+                <p class="text-xl text-gray-600 mb-8 persian-text">
+                    هر روز هفته درمان خاص خود را دارد
+                </p>
+                <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
+                    <div class="bg-white rounded-xl p-4 shadow-lg">
+                        <div class="text-sm font-semibold persian-text text-gray-600 mb-2">شنبه</div>
+                        <div class="text-lg">🫧</div>
+                        <div class="text-xs persian-text mt-2">ماینوکسیدیل</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-lg">
+                        <div class="text-sm font-semibold persian-text text-gray-600 mb-2">یکشنبه</div>
+                        <div class="text-lg">🧴</div>
+                        <div class="text-xs persian-text mt-2">تونیک سریتا</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-lg">
+                        <div class="text-sm font-semibold persian-text text-gray-600 mb-2">دوشنبه</div>
+                        <div class="text-lg">🫧</div>
+                        <div class="text-xs persian-text mt-2">ماینوکسیدیل</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-lg" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(27, 67, 50, 0.1));">
+                        <div class="text-sm font-semibold persian-text text-gray-600 mb-2">سه‌شنبه</div>
+                        <div class="text-lg">📍</div>
+                        <div class="text-xs persian-text mt-2">درمارولر</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-lg">
+                        <div class="text-sm font-semibold persian-text text-gray-600 mb-2">چهارشنبه</div>
+                        <div class="text-lg">🫧</div>
+                        <div class="text-xs persian-text mt-2">ماینوکسیدیل</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-lg">
+                        <div class="text-sm font-semibold persian-text text-gray-600 mb-2">پنجشنبه</div>
+                        <div class="text-lg">🧴</div>
+                        <div class="text-xs persian-text mt-2">تونیک سریتا</div>
+                    </div>
+                    <div class="bg-white rounded-xl p-4 shadow-lg" style="background: linear-gradient(135deg, rgba(212, 175, 55, 0.1), rgba(27, 67, 50, 0.1));">
+                        <div class="text-sm font-semibold persian-text text-gray-600 mb-2">جمعه</div>
+                        <div class="text-lg">📍</div>
+                        <div class="text-xs persian-text mt-2">درمارولر</div>
+                    </div>
+                </div>
+                <a href="weekly.html" class="timer-btn text-white px-8 py-4 rounded-full font-medium persian-text inline-block">
+                    مشاهده جزئیات کامل
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-white/90 backdrop-blur-md py-8 mt-16">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-600 persian-text">
+                © 2024 برنامه مراقبت از موها - طراحی شده برای سلامتی و زیبایی موهای شما
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="main.js"></script>
+    <script>
+        // Create floating particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            if (!container) return;
+            
+            for (let i = 0; i < 20; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 6 + 's';
+                particle.style.animationDuration = (6 + Math.random() * 4) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // Smooth scroll to routine section
+        function scrollToRoutine() {
+            document.getElementById('routine-section').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+        
+        // Initialize particles on load
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+        });
+    </script>
+</body>
+</html>

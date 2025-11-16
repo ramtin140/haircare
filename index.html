@@ -11,6 +11,13 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1B4332">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="مراقبت از موها">
+    
     <!-- Animation Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/typed.js/2.0.12/typed.min.js"></script>
@@ -257,6 +264,14 @@
                         <a href="weekly.html" class="bg-white text-gray-700 px-8 py-4 rounded-full font-medium persian-text border-2 border-gray-300 hover:border-green-800 transition-all">
                             مشاهده برنامه هفتگی
                         </a>
+                    </div>
+                    
+                    <!-- Notification Status -->
+                    <div class="mt-6">
+                        <div id="notification-status" class="inline-flex items-center px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm persian-text">
+                            <span class="w-2 h-2 bg-green-500 rounded-full ml-2"></span>
+                            نوتیفیکیشن‌ها فعال هستند
+                        </div>
                     </div>
                 </div>
                 <div class="hero-image h-96 rounded-2xl shadow-2xl"></div>

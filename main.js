@@ -4,6 +4,7 @@ class HairCareApp {
         this.currentDate = new Date();
         this.routineData = this.loadRoutineData();
         this.timers = {};
+        this.notificationsEnabled = false;
         this.init();
     }
 
@@ -12,6 +13,169 @@ class HairCareApp {
         this.setupEventListeners();
         this.updateDailyDisplay();
         this.initializeTypedText();
+        this.initializePWA();
+        this.requestNotificationPermission();
+        this.updateRealTimeDay();
+        this.setupDailyReminders();
+    }
+
+    // Initialize PWA features
+    initializePWA() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(registration => {
+                    console.log('Service Worker registered successfully');
+                    this.showPWAPrompt();
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed');
+                });
+        }
+    }
+
+    // Show PWA install prompt
+    showPWAPrompt() {
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install button
+            const installBtn = document.createElement('div');
+            installBtn.className = 'pwa-install-prompt';
+            installBtn.innerHTML = `
+                <div class="bg-green-800 text-white p-4 rounded-lg shadow-lg fixed bottom-4 right-4 left-4 z-50">
+                    <div class="flex items-center justify-between">
+                        <div class="persian-text">
+                            <h4 class="font-bold">نصب برنامه مراقبت از موها</h4>
+                            <p class="text-sm">برای دسترسی سریع‌تر و نوتیفیکیشن‌ها</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button id="install-pwa" class="bg-yellow-500 px-4 py-2 rounded-lg font-medium persian-text">
+                                نصب
+                            </button>
+                            <button id="close-pwa-prompt" class="bg-gray-600 px-4 py-2 rounded-lg font-medium persian-text">
+                                بستن
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(installBtn);
+            
+            document.getElementById('install-pwa').addEventListener('click', () => {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        this.showNotification('برنامه با موفقیت نصب شد!');
+                    }
+                    deferredPrompt = null;
+                    installBtn.remove();
+                });
+            });
+            
+            document.getElementById('close-pwa-prompt').addEventListener('click', () => {
+                installBtn.remove();
+            });
+            
+            // Auto-hide after 10 seconds
+            setTimeout(() => {
+                if (installBtn.parentNode) {
+                    installBtn.remove();
+                }
+            }, 10000);
+        });
+    }
+
+    // Request notification permission
+    async requestNotificationPermission() {
+        if ('Notification' in window) {
+            const permission = await Notification.requestPermission();
+            this.notificationsEnabled = permission === 'granted';
+            
+            if (this.notificationsEnabled) {
+                this.showNotification('نوتیفیکیشن‌ها فعال شدند!');
+            }
+        }
+    }
+
+    // Setup daily reminders
+    setupDailyReminders() {
+        // Morning reminder (8 AM)
+        this.scheduleReminder(8, 0, 'صبح بخیر! زمان مصرف فیناستراید و شامپو است.');
+        
+        // Evening reminder (9 PM)
+        this.scheduleReminder(21, 0, 'شب بخیر! زمان استفاده از تونیک و ماساژ سر است.');
+        
+        // Weekly treatment reminder (Saturday 8 PM for Minoxidil)
+        if (new Date().getDay() === 0) { // Saturday
+            this.scheduleReminder(20, 0, 'امشب زمان استفاده از فوم ماینوکسیدیل است!');
+        }
+    }
+
+    // Schedule notification
+    scheduleReminder(hour, minute, message) {
+        const now = new Date();
+        const reminderTime = new Date();
+        reminderTime.setHours(hour, minute, 0, 0);
+        
+        if (reminderTime <= now) {
+            reminderTime.setDate(reminderTime.getDate() + 1);
+        }
+        
+        const timeUntilReminder = reminderTime.getTime() - now.getTime();
+        
+        setTimeout(() => {
+            this.showNotification(message);
+            // Repeat daily
+            setInterval(() => {
+                this.showNotification(message);
+            }, 24 * 60 * 60 * 1000);
+        }, timeUntilReminder);
+    }
+
+    // Show notification
+    showNotification(message) {
+        if (this.notificationsEnabled && 'serviceWorker' in navigator) {
+            navigator.serviceWorker.ready.then(registration => {
+                registration.showNotification('مراقبت از موها', {
+                    body: message,
+                    icon: '/resources/hero-hair-care.png',
+                    badge: '/resources/hero-hair-care.png',
+                    vibrate: [100, 50, 100],
+                    data: {
+                        dateOfArrival: Date.now()
+                    },
+                    actions: [
+                        {
+                            action: 'open',
+                            title: 'باز کردن برنامه'
+                        }
+                    ]
+                });
+            });
+        }
+    }
+
+    // Update real-time day display
+    updateRealTimeDay() {
+        const today = new Date();
+        const persianDays = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنجشنبه', 'جمعه'];
+        const todayName = persianDays[today.getDay()];
+        
+        // Update any element showing current day
+        const dayElements = document.querySelectorAll('.current-day');
+        dayElements.forEach(el => {
+            el.textContent = todayName;
+        });
+        
+        // Highlight today in weekly calendar
+        const todayIndex = today.getDay();
+        const todayElement = document.querySelector(`[data-day="${todayIndex}"]`);
+        if (todayElement) {
+            todayElement.classList.add('today');
+        }
     }
 
     // Initialize text animations
